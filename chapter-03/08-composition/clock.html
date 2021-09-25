@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html, body, .container {
+            height: 100%;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+    <title>Clock</title>
+</head>
+<body>
+    <div class="container">
+        <h1 class="time"></h1>
+    </div>
+    <script>
+        const container = document.querySelector('.container');
+
+        const oneSecond = () => 1000;
+        const compose = (...fns) => (arg) => fns.reduce((composed, fn) => fn(composed), arg);
+
+        const getCurrentTime = () => new Date();
+
+        const serializeClockTime = (date) => ({
+            h: date.getHours(),
+            m: date.getMinutes(),
+            s: date.getSeconds(),
+        })
+
+        const appendAMPM = time => ({
+            ...time,
+            ampm: time.h >= 12 ? 'PM' : 'AM',
+        })
+
+        const civilianHours = timeClock => ({
+            ...timeClock,
+            h: timeClock.h > 12 ? timeClock.h - 12 : timeClock.h,
+        })
+
+        const convertToCivilianTime = timeClock => 
+            compose(
+                appendAMPM,
+                civilianHours,
+            )(timeClock)
+
+        const prependZero = key => timeClock => ({
+            ...timeClock,
+            [key]: timeClock[key].toString().padStart(2, '0'),
+        })
+
+        const doubleDigits = civilianTime => 
+            compose(
+                prependZero('h'),
+                prependZero('m'),
+                prependZero('s'),
+            )(civilianTime)
+
+
+        const formatClock = format => civilianClock => 
+            format
+                .replace('hh', civilianClock.h)
+                .replace('mm', civilianClock.m)
+                .replace('ss', civilianClock.s)
+                .replace('tt', civilianClock.ampm)
+
+        const display = target => time => target(time)
+
+        const log = time => {
+            const element = document.querySelector('.time')
+
+            element.textContent = time;
+        }
+
+        const startTicking = () => 
+            setInterval(
+                compose(
+                    getCurrentTime,
+                    serializeClockTime,
+                    convertToCivilianTime,
+                    doubleDigits,
+                    formatClock('hh:mm:ss tt'),
+                    display(log)
+                ), oneSecond())
+        
+        startTicking();
+    </script>
+</body>
+</html>
