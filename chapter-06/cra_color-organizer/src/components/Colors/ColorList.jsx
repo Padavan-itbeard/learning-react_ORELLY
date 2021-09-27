@@ -1,19 +1,11 @@
+import { useColors } from "../../hooks/useColors";
 import { Color } from "./Color";
 
-export const ColorList = ({
-    colors = [],
-    onRemoveColor = (f) => f,
-    onRateColor = (f) => f,
-}) => {
+export const ColorList = () => {
+    const { colors } = useColors();
+
     return colors.length ? (
-        colors.map((color, i) => (
-            <Color
-                key={color.id}
-                {...color}
-                onRemove={onRemoveColor}
-                onRate={onRateColor}
-            />
-        ))
+        colors.map((color, i) => <Color key={color.id} {...color} />)
     ) : (
         <div>No Colors Listed.</div>
     );

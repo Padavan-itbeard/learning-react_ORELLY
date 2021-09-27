@@ -2,22 +2,20 @@
  * При данном подходе React контролирует изменения, а также можем добавить дополнительную валидацию формы.
  */
 
+import { useColors } from "../../hooks/useColors";
 import { useInput } from "../../hooks/useInput";
 
 export const AddColorForm = ({ onNewColor = (f) => f }) => {
-    // const [title, setTitle] = useState("");
-    // const [color, setColor] = useState("#000000");
     const [titleProps, resetTitle] = useInput("");
     const [colorProps, resetColor] = useInput("#000000");
+    const { addColor } = useColors();
 
     const handleSubmit = (event) => {
         event.preventDefault();
         const { value: title } = titleProps;
         const { value: color } = colorProps;
 
-        onNewColor(title, color);
-        // setTitle('');
-        // setColor('#000000')
+        addColor(title, color);
         resetTitle();
         resetColor();
     };
@@ -25,20 +23,12 @@ export const AddColorForm = ({ onNewColor = (f) => f }) => {
     return (
         <form onSubmit={handleSubmit}>
             <input
-                // value={title}
-                // onChange={event => setTitle(event.target.value)}
                 {...titleProps}
                 type="text"
                 placeholder="color title..."
                 required
             />
-            <input
-                // value={color}
-                // onChange={event => setColor(event.target.value)}
-                {...colorProps}
-                type="color"
-                required
-            />
+            <input {...colorProps} type="color" required />
             <button>ADD</button>
         </form>
     );
